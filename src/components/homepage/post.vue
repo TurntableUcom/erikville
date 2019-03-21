@@ -1,6 +1,6 @@
 <template>
   <article class="masonry__brick entry format-standard" data-aos="fade-up">
-    <div class="entry__thumb">
+    <div class="entry__thumb" v-if="image">
       <router-link :to="'/post/' + id + '/' + title.replace(/ /g,'-').toLowerCase()" class="entry__thumb-link">
         <img :src="'/assets/images/thumbs/masonry/' + image + '-400.jpg'" :srcset="imagesrcset" alt="" />
       </router-link>

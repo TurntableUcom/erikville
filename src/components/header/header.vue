@@ -28,6 +28,10 @@
           <li v-if="auth">
             <a @click="onLogout" style="cursor:pointer">Log Out</a>
           </li>
+          <li v-if="isAdmin">|</li>
+          <li v-if="isAdmin">
+            <router-link to="/admin">Admin Dashboard</router-link>
+          </li>
         </ul>
         <!-- end header__social -->
 
@@ -192,6 +196,9 @@ export default {
     },
     isOnHomepage () {
       return this.$store.getters.onHomepage
+    },
+    isAdmin () {
+      return this.$store.getters.loggedInAsAdmin
     }
   },
   created () {
@@ -199,7 +206,7 @@ export default {
       // this.fetchBlogPosts(); VUEFIRE IS HANDLING THIS NOW
       // vm.$bindAsArray('featuredPosts', db.ref('blog-posts').orderByChild('featured').equalTo('y'), null, () => this.sortFeaturedPosts())
 
-      // AFTER LOGGIN IN OR REGISETRING AND BEING REDIRECTED, SORTED WAS EMPTY BUT POSTS EXISTED
+      // AFTER LOGGIN IN OR REGISETRING AND BEING REDIRECTED, SORTED WAS EMPTY BUT POSTS EXISTED, DUNNO WHY
       if (this.sortedFeaturedPosts.length < 1) this.sortedFeaturedPosts = this.featuredPosts
   },
   methods: {

@@ -48,7 +48,7 @@ export default {
   },
   methods: {
     fetchBlogPosts() {
-      globalAxios.get('blog-posts.json')
+      globalAxios.get('blog-posts.json') // TODO, UPDATE TO USE VUEFIRE
         .then(res => {
             const results = res.data
             // console.log('category results');

@@ -15,11 +15,13 @@ import './assets/css/fonts.css'
 import './assets/css/main.css'
 import './assets/css/vendor.css'
 
+// var VueScrollTo = require('vue-scrollto');
+// Vue.use(VueScrollTo)
 Vue.use(Vuelidate)
 Vue.use(VueFire)
 
 axios.defaults.baseURL = 'https://eric-blog-957a0.firebaseio.com/';
-axios.defaults.headers.common['Authorization'] = 'AIzaSyCIz92jHPqVwASkepiB66Gn2q0_b89rd6Y';
+// axios.defaults.headers.common['aut'] = 'AIzaSyCIz92jHPqVwASkepiB66Gn2q0_b89rd6Y';
 axios.defaults.headers.get['Accepts'] = 'application/json';
 
 /*

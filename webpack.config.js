@@ -14,8 +14,8 @@ module.exports = {
   },
   plugins: [
       new ExtractTextPlugin("assets/css/styles.css"),
-      new VueLoaderPlugin()
-      // new CopyWebpackPlugin([{ from: 'assets/images', to: 'assets/images' }])
+      new VueLoaderPlugin(),
+      new CopyWebpackPlugin([{ from: './src/assets', to: './assets' }])
   ],
   module: {
     rules: [
@@ -25,7 +25,6 @@ module.exports = {
         options: {
           loaders: {
           }
-          // other vue-loader options go here
         }
       },
       {

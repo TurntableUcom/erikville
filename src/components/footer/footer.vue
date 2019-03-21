@@ -13,12 +13,6 @@
             <a href="#0">Home</a>
           </li>
           <li>
-            <a href="#0">Blog</a>
-          </li>
-          <li>
-            <a href="#0">Styles</a>
-          </li>
-          <li>
             <a href="#0">About</a>
           </li>
           <li>
@@ -49,12 +43,6 @@
           <li>
             <a href="#0">October 2017</a>
           </li>
-          <li>
-            <a href="#0">September 2017</a>
-          </li>
-          <li>
-            <a href="#0">August 2017</a>
-          </li>
         </ul>
 
       </div>
@@ -77,12 +65,6 @@
           <li>
             <a href="#0">Pinterest</a>
           </li>
-          <li>
-            <a href="#0">Google+</a>
-          </li>
-          <li>
-            <a href="#0">LinkedIn</a>
-          </li>
         </ul>
 
       </div>
@@ -92,16 +74,18 @@
 
         <h4>Our Newsletter</h4>
 
-        <p>We will not innundate you with emails, we promise. Very infrequent notices of fresh content, which we trust you will find informative.</p>
+        <div v-if="newsletterSubscribed" class="success">Successfully Subscribed!</div>
 
-        <div class="subscribe-form">
-          <form id="mc-form" class="group" novalidate="true">
+        <p v-if="!newsletterSubscribed">We won't innundate you with emails, we promise. Very infrequent notices of fresh content, which we trust you will find informative.</p>
 
-            <input type="email" value="" name="EMAIL" class="email" id="mc-email" placeholder="Email Address" required="">
+        <div class="subscribe-form" v-if="!newsletterSubscribed">
+          <form id="mc-form" class="group" novalidate="true" @submit.prevent="newsletterSignup">
 
-              <input type="submit" name="subscribe" value="Send">
+            <input type="email" value="" name="EMAIL" class="email" id="mc-email" placeholder="Email Address" v-model="newsletterEmail">
 
-                <label for="mc-email" class="subscribe-message"></label>
+            <input type="submit" name="subscribe" value="Submit">
+
+            <label for="mc-email" class="subscribe-message"></label>
 
            </form>
         </div>
@@ -119,7 +103,7 @@
         <div class="s-footer__copyright">
           <span>&copy; Copyright Philosophy 2019</span>
           <span>
-            Site Template by <a href="https://colorlib.com/">Colorlib</a>
+            Site Template by <a href="https://colorlib.com/" style="color:#555555">Colorlib</a>
           </span>
         </div>
 
@@ -133,3 +117,31 @@
 
 </footer>
 </template>
+
+<script>
+  import globalAxios from 'axios'
+
+  export default {
+    data () {
+      return {
+        newsletterEmail: '',
+        newsletterSubscribed: false
+      }
+    },
+    methods: {
+      newsletterSignup() {
+        console.log(this.newsletterEmail)
+        globalAxios.post('/newsletter.json', {email: this.newsletterEmail})
+          .then(res => {
+              console.log(res)
+              this.newsletterSubscribed = true;
+          })
+        .catch(error => console.log(error))
+      }
+    }
+  }
+</script>
+
+<style scoped>
+
+</style>

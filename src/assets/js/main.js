@@ -2,7 +2,6 @@
 * Philosophy - Main JS
 * ------------------------------------------------------------------- */
 
-
 (function ($) {
     "use strict";
 
@@ -192,6 +191,7 @@
 
         var containerBricks = $('.masonry');
 
+        /*
         containerBricks.imagesLoaded(function () {
             containerBricks.masonry({
                 itemSelector: '.masonry__brick',
@@ -203,6 +203,16 @@
         // layout Masonry after each image loads
         containerBricks.imagesLoaded().progress(function () {
             containerBricks.masonry('layout');
+        });
+        */
+
+        // init Masonry after all images have loaded
+        containerBricks.imagesLoaded(function() {
+            containerBricks.masonry({
+                itemSelector: '.masonry__brick',
+                percentPosition: true,
+                resize: true
+            });
         });
     };
 
@@ -608,7 +618,7 @@
         clPrettyPrint();
         clSearch();
         clMobileMenu();
-        clMasonryFolio();
+        // clMasonryFolio();
         clSlickSlider();
         clSmoothScroll();
         clPlaceholder();
@@ -616,6 +626,8 @@
         clAOS();
         clAjaxChimp();
         clBackToTop();
-        clGoogleMap();
+        // clGoogleMap();
+
+        setTimeout(clMasonryFolio, 1800)
     });
 })(jQuery);

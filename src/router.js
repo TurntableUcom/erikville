@@ -4,7 +4,6 @@ import VueRouter from 'vue-router';
 import store from './store';
 
 import HomepagePosts from './components/homepage/posts.vue';
-import DashboardPage from './components/dashboard/dashboard.vue';
 import SignupPage from './components/auth/signup.vue';
 import SigninPage from './components/auth/signin.vue';
 import About from './components/about/about.vue';
@@ -13,6 +12,8 @@ import PostVideo from './components/posts/video.vue';
 import BlogPost from './components/posts/post.vue';
 import Categories from './components/categories/categories.vue';
 import Category from './components/categories/category.vue';
+import AdminDash from './components/admin/dashboard.vue';
+import AdminNewPost from './components/admin/new-post.vue';
 
 Vue.use(VueRouter);
 
@@ -27,10 +28,18 @@ const routes = [
   { path: '/post', component: PostVideo },
   { path: '/post/:postid', component: BlogPost },
   { path: '/post/:postid/:posttitle', component: BlogPost },
-  { path: '/dashboard',
-    component: DashboardPage,
+  { path: '/admin', component: AdminDash,
     beforeEnter (to, from, next) {
-      if (store.state.idToken) {
+      if (store.state.isAdmin) {
+        next()
+      } else {
+        next('/signin')
+      }
+    }
+  },
+  { path: '/admin/add-post', component: AdminNewPost,
+    beforeEnter (to, from, next) {
+      if (store.state.isAdmin) {
         next()
       } else {
         next('/signin')

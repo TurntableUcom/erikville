@@ -3,9 +3,8 @@
     <div class="signup-form">
       <form @submit.prevent="onSubmit">
         <div class="input" :class="{invalid: $v.name.$error}">
-          <label for="age">Your Name</label>
-          <input
-                  type="text"
+          <label for="name">Your Name</label>
+          <input type="text"
                   id="name"
                   v-model="name"
                   @blur="$v.name.$touch()" />
@@ -13,16 +12,14 @@
         </div>
         <div class="input" :class="{invalid: $v.email.$error}">
           <label for="email">Email</label>
-          <input
-                  type="email"
+          <input type="email"
                   id="email"
                   v-model="email"
                   @blur="$v.email.$touch()" />
         </div>
         <div class="input" :class="{invalid: $v.password.$error}">
           <label for="password">Password</label>
-          <input
-                  type="password"
+          <input type="password"
                   id="password"
                   v-model="password"
                   @blur="$v.password.$touch()" />
@@ -30,8 +27,7 @@
         </div>
         <div class="input" :class="{invalid: $v.confirmPassword.$error}">
           <label for="confirm-password">Confirm Password</label>
-          <input
-                  type="password"
+          <input type="password"
                   id="confirm-password"
                   v-model="confirmPassword"
                   @blur="$v.confirmPassword.$touch()" />
@@ -63,7 +59,6 @@
         email: '',
         password: '',
         confirmPassword: '',
-        country: '',
         terms: false,
         optin: true
       }
@@ -78,7 +73,6 @@
           terms: this.terms,
           optin: this.optin
         }
-        console.log(formData)
         this.$store.dispatch('signup', formData)
       }
     },
@@ -101,7 +95,7 @@
   }
 </script>
 
-<style scoped>
+<style>
   #signup {
     padding:15px;
   }

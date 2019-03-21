@@ -12,7 +12,9 @@
     "axios": "^0.17.0",
     "firebase": "^5.9.0",
     "vue": "^2.4.4",
+    "vue-file-picker": "0.0.1",
     "vue-router": "^3.0.1",
+    "vue-scrollto": "^2.15.0",
     "vuefire": "^1.4.4",
     "vuelidate": "^0.7.4",
     "vuex": "^3.0.0"

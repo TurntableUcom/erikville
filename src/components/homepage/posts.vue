@@ -89,7 +89,7 @@ export default {
   },
   firebase: {
     blogPosts: {
-      source: db.ref('blog-posts'), //.orderByChild('featured').equalTo('n'), //ADD BACK IN AFTER FIXING MASONRY
+      source: db.ref('blog-posts').orderByChild('featured').equalTo('n'),
       readyCallback(snapshot) {
           // console.log('snapshot')
           // console.log(snapshot)

@@ -1,6 +1,13 @@
 {
   "rules": {
-    ".read": "true",
-    ".write": "auth != null"
+    ".read": true,
+    ".write": "auth != null",
+  	"blog-posts": {
+      ".indexOn": ["featured"]
+    },
+    "newsletter": {
+			".read": false,
+      ".write": true
+		}
   }
 }
