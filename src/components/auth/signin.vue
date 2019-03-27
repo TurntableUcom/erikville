@@ -1,6 +1,8 @@
 <template>
   <div id="signin">
     <div class="form">
+      <div class="message success" v-if="succ" style="margin-top:0;margin-bottom:28px">{{ succ }}</div>
+      <div class="message error" v-if="err" style="margin-top:0;margin-bottom:24px">{{ err }}</div>
       <form @submit.prevent="onSubmit">
         <div class="input" :class="{invalid: $v.email.$error}">
           <label for="email">Email</label>
@@ -13,6 +15,8 @@
         </div>
         <div class="submit">
           <button type="submit">Submit</button>
+          &nbsp;&nbsp;
+          <button @click.prevent="forgotPassword">Forgot Password?</button>
         </div>
       </form>
     </div>
@@ -21,6 +25,7 @@
 
 <script>
   import { required, email, minLength, numeric, sameAs } from 'vuelidate/lib/validators'
+  import { auth } from '../../firebase'
   
   export default {
     data () {
@@ -29,14 +34,38 @@
         password: ''
       }
     },
+    computed: {
+      err() {
+        return this.$store.getters.errorMsg
+      },
+      succ() {
+        return this.$store.getters.successMsg
+      }
+    },
     methods: {
       onSubmit () {
+        this.$store.dispatch('setErrorMessage', '')
+        this.$store.dispatch('setSuccessMessage', '')
         const formData = {
           email: this.email,
           password: this.password,
         }
-        console.log(formData)
-        this.$store.dispatch('login', {email: formData.email, password: formData.password})
+        this.$store.dispatch('login', formData)
+      },
+      forgotPassword () {
+        this.$store.dispatch('setErrorMessage', '')
+        this.$store.dispatch('setSuccessMessage', '')
+        this.$v.email.$touch()
+        if (this.$v.email.$invalid) {
+          this.$store.dispatch('setErrorMessage', 'Please enter the email address used to create this account. If an account exists in our records with the email address provided, a reset password email will be sent to that address.')
+        } else {
+          const _this = this;
+          auth.sendPasswordResetEmail(this.email).then(function() {
+            _this.$store.dispatch('setSuccessMessage', 'Thank you. If an account exists in our records with the email address provided, a reset password email will be sent to that address. If you do not receive an email, please try another email address that you may have registered.')
+          }).catch(function(error) {
+            _this.$store.dispatch('setErrorMessage', error.message)
+          });
+        }
       }
     },
     validations: {
@@ -52,68 +81,10 @@
   }
 </script>
 
-<style>
-  #signin {
-    padding:15px;
-  }
-  
-  .form {
-    width: 400px;
-    margin: 30px auto;
-    border: 1px solid #eee;
-    padding: 20px;
-     box-shadow: 0px 0px 3px #ccc;
-  }
-
-  .input {
-    margin: 10px auto;
-  }
-
-  .input.inline label {
-    display: inline;
-  }
-
-  .input label {
-    display: block;
-    color: #4e4e4e;
-    margin-bottom: 6px;
-  }
-
-  .form .input input,
-  .form .input textarea {
-    font: inherit;
-    width: 100%;
-    padding: 6px 12px;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-  }
-
-  .form .input input:focus {
-    outline: none;
-    border: 1px solid #521751;
-    background-color: #eee;
-  }
-
-  .form .submit button {
-    border: 1px solid #521751;
-    color: #521751;
-    padding: 10px 20px;
-    font: inherit;
-    cursor: pointer;
-  }
-
-  .form .submit button:hover,
-  .form .submit button:active {
-    background-color: #521751;
-    color: white;
-  }
-
-  .form .submit button[disabled],
-  .form .submit button[disabled]:hover,
-  .form .submit button[disabled]:active {
-    border: 1px solid #ccc;
-    background-color: transparent;
-    color: #ccc;
-    cursor: not-allowed;
+<style scoped>
+  .error, .success {
+    margin:0;
+    font-size:1.35rem;
+    line-height:1.5;
   }
 </style>

@@ -12,8 +12,9 @@ import store from './store'
 import '../index.html'
 import './assets/css/base.css'
 import './assets/css/fonts.css'
-import './assets/css/main.css'
 import './assets/css/vendor.css'
+import './assets/css/main.css'
+import './assets/css/custom.css'
 
 // var VueScrollTo = require('vue-scrollto');
 // Vue.use(VueScrollTo)
@@ -38,7 +39,7 @@ axios.interceptors.request.eject(reqInterceptor)
 axios.interceptors.response.eject(resInterceptor)
 */
 
-new Vue({
+let vm = new Vue({
   el: '#app',
   router,
   store,

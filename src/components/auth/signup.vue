@@ -1,9 +1,10 @@
 <template>
   <div id="signup">
-    <div class="signup-form">
+    <div class="form">
+      <div class="message error" v-if="err" style="margin-top:0;margin-bottom:18px">{{ err }}</div>
       <form @submit.prevent="onSubmit">
         <div class="input" :class="{invalid: $v.name.$error}">
-          <label for="name">Your Name</label>
+          <label for="name">Screen Name</label>
           <input type="text"
                   id="name"
                   v-model="name"
@@ -16,6 +17,7 @@
                   id="email"
                   v-model="email"
                   @blur="$v.email.$touch()" />
+          <p v-if="$v.name.$error" class="validation">Please provide the email address you will log in with.</p>
         </div>
         <div class="input" :class="{invalid: $v.password.$error}">
           <label for="password">Password</label>
@@ -33,9 +35,10 @@
                   @blur="$v.confirmPassword.$touch()" />
           <p v-if="$v.confirmPassword.$error" class="validation">The entered passwords do not match.</p>
         </div>
-        <div class="input inline minpad">
-          <input type="checkbox" id="terms" v-model="terms" />
+        <div class="input inline minpad" :class="{invalid: $v.terms.$error}">
+          <input type="checkbox" id="terms" v-model="terms" @change="$v.terms.$touch()" />
           <label for="terms">&nbsp;Accept <a href="#">Terms of Use</a></label>
+          <p v-if="$v.terms.$error" class="validation">Please accept our terms and conditions.</p>
         </div>
         <div class="input inline minpad">
           <input type="checkbox" id="optin" v-model="optin" />
@@ -45,6 +48,7 @@
           <button type="submit">Submit</button>
         </div>
       </form>
+      <div class="message error" v-if="err" style="margin-top:12px">{{ err }}</div>
     </div>
   </div>
 </template>
@@ -63,17 +67,28 @@
         optin: true
       }
     },
+    computed: {
+      err() {
+        return this.$store.getters.errorMsg
+      }
+    },
     methods: {
       onSubmit () {
-        const formData = {
-          name: this.name,
-          email: this.email,
-          password: this.password,
-          confirmPassword: this.confirmPassword,
-          terms: this.terms,
-          optin: this.optin
+        this.$store.dispatch('setErrorMessage', '')
+        this.$v.$touch()
+        if (this.$v.$invalid) {
+          // display additional message?
+        } else {
+          const formData = {
+            name: this.name,
+            email: this.email,
+            password: this.password,
+            confirmPassword: this.confirmPassword,
+            terms: this.terms,
+            optin: this.optin
+          }
+          this.$store.dispatch('signup', formData)
         }
-        this.$store.dispatch('signup', formData)
       }
     },
     validations: {
@@ -90,104 +105,18 @@
       },
       confirmPassword: {
         sameAs: sameAs('password')
-      }
+      },
+      terms: {
+        checked: value => value === true
+      },
     }
   }
 </script>
 
-<style>
-  #signup {
-    padding:15px;
-  }
-  
-  .signup-form {
-    width: 400px;
-    margin: 30px auto;
-    border: 1px solid #eee;
-    padding: 20px;
-    box-shadow: 0px 0px 3px #ccc;
-    line-height:.9;
-  }
-
-  .input {
-    margin: 10px auto;
-  }
-
-  .input label {
-    display: block;
-    color: #4e4e4e;
-    margin-bottom: 6px;
-  }
-
-  .input.inline label {
-    display: inline;
-  }
-
-  .input input {
-    font: inherit;
-    width: 100%;
-    padding: 6px 12px;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-  }
-
-  .input.inline input {
-    width: auto;
-  }
-
-  .input input:focus {
-    outline: none;
-    border: 1px solid #521751;
-    background-color: #eee;
-  }
-
-  .input select {
-    border: 1px solid #ccc;
-    font: inherit;
-  }
-
-  .hobbies button {
-    border: 1px solid #521751;
-    background: #521751;
-    color: white;
-    padding: 6px;
-    font: inherit;
-    cursor: pointer;
-  }
-
-  .hobbies button:hover,
-  .hobbies button:active {
-    background-color: #8d4288;
-  }
-
-  .hobbies input {
-    width: 90%;
-  }
-
-  .submit button {
-    border: 1px solid #521751;
-    color: #521751;
-    padding: 10px 20px;
-    font: inherit;
-    cursor: pointer;
-  }
-
-  .submit button:hover,
-  .submit button:active {
-    background-color: #521751;
-    color: white;
-  }
-
-  .submit button[disabled],
-  .submit button[disabled]:hover,
-  .submit button[disabled]:active {
-    border: 1px solid #ccc;
-    background-color: transparent;
-    color: #ccc;
-    cursor: not-allowed;
-  }
-
-  .minpad {
-    margin:0 auto;
+<style scoped>
+  .error {
+    margin:0;
+    font-size:1.5rem;
+    line-height:1.6;
   }
 </style>

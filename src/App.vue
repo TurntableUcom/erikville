@@ -29,9 +29,3 @@
     }
   }
 </script>
-
-<style>
-#content {
-  background-color:#eee;
-}
-</style>

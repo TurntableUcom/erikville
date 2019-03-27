@@ -1,3 +1,4 @@
+import firebase from 'firebase/app'
 import { initializeApp } from 'firebase/app'
 import 'firebase/database'
 import 'firebase/auth'
@@ -14,7 +15,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 // Export the database for components to use. If you want to get fancy, use mixins or provide / inject to avoid redundant imports.
-export const fb = firebase;
+export const fireb = firebase;
 export const db = app.database();
 // export const blogPostsRef = db.ref('blog-posts');
 export const auth = app.auth();

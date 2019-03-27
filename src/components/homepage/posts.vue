@@ -69,7 +69,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import globalAxios from 'axios'
 import posting from './post.vue'
-import { db } from '../../firebase';
+import { db } from '../../firebase'
   
 export default {
   data () {
@@ -93,6 +93,12 @@ export default {
       readyCallback(snapshot) {
           // console.log('snapshot')
           // console.log(snapshot)
+          for (let idx in this.blogPosts) { // add key id to each post
+            const post = this.blogPosts[idx]
+            const dbkey = post['.key']
+            post.id = dbkey
+            this.blogPosts[idx] = post
+          }
           this.sortPosts()
       },
       cancelCallback(err) {

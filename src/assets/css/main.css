@@ -662,22 +662,6 @@ select {
    transition: all 0.3s ease-in-out;
 }
 
-.invalid lable, .invalid label {
-    color:red!important;
-}
-
-.invalid input[type="email"],
-.invalid input[type="number"],
-.invalid input[type="search"],
-.invalid input[type="text"],
-.invalid input[type="tel"],
-.invalid input[type="url"],
-.invalid input[type="password"],
-.invalid textarea,
-.invalid select {
-    border: solid 2px red;
-}
-
 .validation {
     margin: -20px 0 18px
 }
@@ -1817,7 +1801,7 @@ button::-moz-focus-inner, input::-moz-focus-inner {
 }
 
 .header__social a {
-   color: #FFFFFF;
+   color: #FFFFFF;outline:0;
 }
 
 .header__social li {
@@ -4062,7 +4046,7 @@ footer h4::after {
 
 .comment__text {
    clear: both;
-   margin: 1.8rem 0 0 0;
+   margin: 0;
    padding: 0;
 }
 

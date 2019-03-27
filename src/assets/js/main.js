@@ -624,10 +624,10 @@
         clPlaceholder();
         clAlertBoxes();
         clAOS();
-        clAjaxChimp();
+        // clAjaxChimp();
         clBackToTop();
         // clGoogleMap();
 
-        setTimeout(clMasonryFolio, 1800)
+        setTimeout(clMasonryFolio, 4000)
     });
 })(jQuery);

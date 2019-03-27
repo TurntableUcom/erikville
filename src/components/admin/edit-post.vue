@@ -29,10 +29,10 @@
           <label for="tags">Post Tag(s)</label>
           <button @click="addTag" type="button">Add Tag</button>
           <div class="tag-list">
-            <div class="input" v-for="(tag, index) in postTags" :key="tag.id">
-              <!--<label :for="tag.id">tag #{{ index }}</label>-->
-              <input type="text" :id="tag.id" v-model="tag.value">
-              <button @click="deleteTag(tag.id)" type="button">X</button>
+            <div class="input" v-for="(tag, index) in thisPostTags" :key="tag.key">
+              <!--<label :for="tag.id">tag #{{ index + 1 }}</label>-->
+              <input type="text" :id="tag" v-model="tag.value">
+              <button @click="deleteTag(tag)" type="button">X</button>
               <div style="clear:both"></div>
             </div>
           </div>
@@ -51,6 +51,10 @@
         </div>
         <div class="submit">
           <button type="submit">Submit</button>
+          &nbsp;
+          <button @click="cancelEdit">Cancel Edit</button>
+          &nbsp;
+          <button @click.prevent="deletePost">Delete This Post</button>
         </div>
       </form>
     </div>
@@ -73,7 +77,12 @@
         postTags: [],
         featured: 'n',
         featuredOrder: 0,
-        image: ''
+        image: '',
+        postid: this.$route.params.idofpost,
+        // postsArr: [],
+        postsObj: null,
+        thisPost: null,
+        thisPostTags: []
       }
     },
     methods: {
@@ -86,21 +95,31 @@
             let newPost = {
               title: this.title,
               body: this.body,
-              tags: this.postTags.map(tag => tag.value),
+              tags: this.thisPostTags.map(tag => tag.value),
               featured: this.featured,
               featuredOrder: this.featuredOrder,
               image: this.image,
               date: (d.getMonth()+ 1) + '/' + d.getDate() + '/' + d.getFullYear()
             }
-            globalAxios.post('blog-posts.json?auth=' + res, newPost)
+            globalAxios.put('blog-posts/' + this.postid + '.json?auth=' + res, newPost)
               .then(res => {
-                // console.log(res)
-                router.push('/admin?post=added')
+                router.push('/admin?post=updated')
               })
               .catch(error => console.log(error))
             })
           .catch(error => console.log(error))
         }
+      },
+      cancelEdit () {
+        router.push('/admin')
+      },
+      deletePost () {
+        try {
+          db.ref('blog-posts').child(this.postid).remove()
+        } catch (ex){
+          console.log(ex)
+        }
+        // console.log('removed')
       },
       fileAdded(){
         console.log('this be file yo')
@@ -110,10 +129,10 @@
           id: Math.random() * Math.random() * 1000,
           value: ''
         }
-        this.postTags.push(postTag)
+        this.thisPostTags.push(postTag)
       },
       deleteTag (id) {
-        this.postTags = this.postTags.filter(tag => tag.id !== id)
+        this.thisPostTags = this.thisPostTags.filter(tag => tag.id !== id)
       }
     },
     validations: {
@@ -126,6 +145,32 @@
     },
     components: {
       filePicker: filePicker
+    },
+    firebase: {
+      // postsArr: db.ref('blog-posts'), // loopable with v-for
+      postsObj: { // can use keys, but v-for doesn't loop
+        source: db.ref('blog-posts'),
+        asObject: true,
+        readyCallback(snapshot) {
+          this.thisPost = this.postsObj[this.$route.params.idofpost]
+          this.title = this.thisPost.title
+          this.body = this.thisPost.body
+          this.image = this.thisPost.image
+          this.featured = this.thisPost.featured
+          this.featuredOrder = this.thisPost.featuredOrder
+          this.postTags = this.thisPost.tags
+          for (let ii = 0; ii < this.postTags.length; ii++){
+            let newTag = {
+              key: ii,
+              value: this.postTags[ii]
+            }
+            this.thisPostTags.push(newTag)
+          }
+        },
+        cancelCallback(err) {
+          console.error(err);
+        }
+      }
     }
   }
 </script>

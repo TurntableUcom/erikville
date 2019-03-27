@@ -1,3 +1,103 @@
-.success {
+.clear {clear:both}
+
+#content {
+  background-color:#eee;position:relative;
+}
+
+.success, .error {
     color:green;border:solid 1px green;padding: 10px 15px;background-color:#bce7ba;margin:25px auto;
+}
+.error {
+  color:red;border:solid 1px red;background-color:#fcdede;
+}
+
+#signin, #signup {
+  padding:15px;
+}
+
+.form {
+  width: 450px;
+  margin: 30px auto;
+  border: 1px solid #eee;
+  padding: 20px;
+    box-shadow: 0px 0px 3px #ccc;
+}
+
+.input {
+  margin: 10px auto;
+}
+
+.input.inline label {
+  display: inline;
+}
+
+.input label {
+  display: block;
+  color: #4e4e4e;
+  margin-bottom: 6px;
+}
+
+.form .input input,
+.form .input textarea {
+  font: inherit;
+  width: 100%;
+  padding: 6px 12px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+}
+
+.form .input input:focus {
+  outline: none;
+  border: 1px solid #521751;
+  background-color: #eee;
+}
+
+.form .submit button {
+  border: 1px solid #521751;
+  color: #521751;
+  padding: 10px 20px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.form .submit button:hover,
+.form .submit button:active {
+  background-color: #521751;
+  color: white;
+}
+
+.form .submit button[disabled],
+.form .submit button[disabled]:hover,
+.form .submit button[disabled]:active {
+  border: 1px solid #ccc;
+  background-color: transparent;
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+.input.inline input {
+  width: auto;
+}
+
+.minpad {
+  margin:0 auto;
+}
+
+.invalid label, .invalid label a {
+  color:red!important;
+}
+.invalid label a {
+ text-decoration:underline
+}
+
+.invalid input[type="email"],
+.invalid input[type="number"],
+.invalid input[type="search"],
+.invalid input[type="text"],
+.invalid input[type="tel"],
+.invalid input[type="url"],
+.invalid input[type="password"],
+.invalid textarea,
+.invalid select {
+  border: solid 2px red!important;
 }

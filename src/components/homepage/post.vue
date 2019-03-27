@@ -39,7 +39,7 @@
       image: String,
       tags: Array,
       body: String,
-      id: Number
+      id: String
     },
     computed: {
       imagesrcset() {

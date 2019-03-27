@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import axios from './axios-auth'
+import axios from './axios-auth'  // FOR NEWSLETTER SIGNUP UPON REGISTRATION
 import globalAxios from 'axios'
+import { fireb, db, auth } from './firebase';
 
 import router from './router'
 
@@ -9,23 +10,18 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    idToken: null,
-    userId: null,
     user: null,
     isHomepage: false,
-    isAdmin: false
+    isAdmin: false,
+    errorMessage: '',
+    successMessage: ''
   },
   mutations: {
-    authUser (state, userData) {
-      state.idToken = userData.token
-      state.userId = userData.userId
-    },
     storeUser (state, user) {
       state.user = user
     },
-    clearAuthData (state) {
-      state.idToken = null
-      state.userId = null
+    clearUser (state) {
+      state.user = null
       state.isAdmin = false
     },
     setIsHomepage(state, bool) {
@@ -33,130 +29,189 @@ export default new Vuex.Store({
     },
     setIsAdmin(state, bool) {
       state.isAdmin = bool
+    },
+    setErrorMessage(state, msg) {
+      state.errorMessage = msg
+    },
+    setSuccessMessage(state, msg) {
+      state.successMessage = msg
     }
   },
   actions: {
-    setLogoutTimer ({commit}, expirationTime) {
-      setTimeout(() => {
-        commit('clearAuthData')
-      }, expirationTime * 1000)
+    authStateObserver({commit, dispatch, state}, isNewSignup) {
+      auth.onAuthStateChanged(function(user) {
+        if (user) {
+          if (!isNewSignup) commit('storeUser', assembleUserObject(user))
+          console.log('fetchUser authStateObserver (just stored user)')
+          dispatch('fetchUser', user.email)
+        } else {
+          commit('clearUser')
+        }
+      });
     },
     signup ({commit, dispatch}, authData) {
-        axios.post('/signupNewUser?key=AIzaSyCIz92jHPqVwASkepiB66Gn2q0_b89rd6Y', {
-        email: authData.email,
-        password: authData.password,
-        returnSecureToken: true
-      })
-        .then(res => {
-          commit('authUser', { token: res.data.idToken, userId: res.data.localId })
-          commit('storeUser', {name: authData.name, email: authData.email})
-          const now = new Date()
-          const expirationDate = new Date(now.getTime() + res.data.expiresIn * 1000)
-          localStorage.setItem('token', res.data.idToken)
-          localStorage.setItem('userId', res.data.localId)
-          localStorage.setItem('email', authData.email)
-          localStorage.setItem('expirationDate', expirationDate)
-          dispatch('storeUserToDb', {
-            name: authData.name,
-            email: authData.email,
-            optin: authData.optin,
-            type: 'user'
+      auth.createUserWithEmailAndPassword(authData.email, authData.password)
+      .then (res => {
+        dispatch('authStateObserver', true);
+        console.log('call storeUserToDb', res)
+        dispatch('storeUserToDb', {
+          name: authData.name,
+          email: authData.email,
+          optin: authData.optin,
+          type: 'user'
+        })
+        //commit('storeUser', assembleUserObject(user)) // DONE IN authStateObserver now
+        if (authData.optin) dispatch('newsletterSignup', res)
+        localStorage.setItem('userId', res.user.uid)
+        localStorage.setItem('email', res.user.email)
+        localStorage.setItem('refreshToken', res.user.refreshToken)
+        let user = auth.currentUser
+        if (user){
+          user.updateProfile({
+            displayName: authData.name,
+            photoURL: "/assets/images/avatars/generic-avatar.png"
           })
-          dispatch('setLogoutTimer', res.data.expiresIn)
-        })
-        .catch(error => console.log(error))
-    },
-    login ({commit, dispatch}, authData) {
-        axios.post('/verifyPassword?key=AIzaSyCIz92jHPqVwASkepiB66Gn2q0_b89rd6Y', {
-        email: authData.email,
-        password: authData.password,
-        returnSecureToken: true
-      })
-        .then(res => {
-          commit('authUser', {token: res.data.idToken, userId: res.data.localId})
-          //GRRR dispatch('fetchUser', authData.email) //fetch to set state user object
-          const now = new Date()
-          const expirationDate = new Date(now.getTime() + res.data.expiresIn * 1000)
-          localStorage.setItem('token', res.data.idToken)
-          localStorage.setItem('userId', res.data.localId)
-          localStorage.setItem('email', authData.email)
-          localStorage.setItem('expirationDate', expirationDate)
-          dispatch('setLogoutTimer', res.data.expiresIn)
-          // router.push('/?loggedin=true')
-          router.push('/')
-        })
-        .catch(error => console.log(error))
-    },
-    tryAutoLogin ({commit, dispatch}) {
-      const token = localStorage.getItem('token')
-      if (!token) {
-        return
-      }
-      const expirationDate = new Date(localStorage.getItem('expirationDate'))
-      let now = new Date()
-      now = new Date(now.getTime())
-      if (now >= expirationDate) {
-        return
-      }
-      const userId = localStorage.getItem('userId')
-      commit('authUser', { token: token, userId: userId })
-      dispatch('fetchUser')
-    },
-    logout ({commit}) {
-      commit('clearAuthData')
-      localStorage.removeItem('expirationDate')
-      localStorage.removeItem('token')
-      localStorage.removeItem('userId')
-      // router.replace('/')
-    },
-    isHomepage({commit}) {
-        const path = window.location.pathname
-        const Filename = path.split('/').pop()
-        if (Filename != '' && Filename != 'index.html') {
-            commit('setIsHomepage', false)
-        } else {
-            commit('setIsHomepage', true)
+          .then(() => console.log('displayname saved'))
+          .catch((error) => {
+            console.log(error.message)
+            commit('setErrorMessage', error.message)
+          })
+          .finally(() => router.push('/?loggedin=true'));
         }
-    },
-    storeUserToDb ({commit, state}, userData) {
-      if (!state.idToken) {
-        return
-      }
-      globalAxios.post('/users.json?auth=' + state.idToken, userData)
-          .then(res => {
-              router.push('/?loggedin=true')
-          })
-        .catch(error => console.log(error))
-    },
-    fetchUser ({commit, state}, userEmail) {
-      if (!userEmail) userEmail = localStorage.getItem('email')
-      // TODO: REWORK TO NOT FETCH ALL USERS WITH EACH REQUEST AS IS INDICATED BY THE CONSOLE.LOG BELOW
-      // PERHAPS PERFORM THE LOOKIN IN THE LOGIN/SIGNUP PAGES AND ONLY POST THE MUTATION TO THE STORE
-      globalAxios.get('/users.json?auth=' + state.idToken)
-        .then(res => {
-          const data = res.data
-          // console.log('fetchUser', userEmail)
-          // console.log(data)
-          const users = []
-          for (let key in data) {
-            const user = data[key]
-            if (user.email == userEmail) {
-              user.id = key
-              users.push(user)
-            }
-          }
-          // console.log('filtered down to me?')
-          // console.log(users)
-          commit('storeUser', users[0])
-          if (users[0].type == 'admin') commit('setIsAdmin', true)
       })
       .catch(error => {
-        console.dir(error)
-        if (error.toString().includes('401')){
-          console.log('yep, it\'s a 401')
-          dispatch('logout')
-        }
+        console.log(error.code, error.message)
+        commit('setErrorMessage', error.message)
+      });
+    },
+    login ({commit, dispatch}, authData) {
+      auth.signInWithEmailAndPassword(authData.email, authData.password)
+      .then(res => {
+        // commit('storeUser', assembleUserObject(res.user)) // DONE IN authStateObserver now
+        dispatch('authStateObserver');
+        // dispatch('fetchUser', res.user.email)
+        localStorage.setItem('userId', res.user.uid)
+        localStorage.setItem('email', res.user.email)
+        localStorage.setItem('refreshToken', res.user.refreshToken)
+        router.push('/?loggedin=true')
       })
+      .catch(function(error) {
+        console.log(error.message)
+        commit('setErrorMessage', error.message)
+      });
+    },
+    tryAutoLogin ({commit, dispatch}) {
+      const userId = localStorage.getItem('userId')
+      const email = localStorage.getItem('email')
+      const refreshToken = localStorage.getItem('refreshToken')
+      if (!userId) {
+        return
+      }
+      // const expirationDate = new Date(localStorage.getItem('expirationDate'))
+      // let now = new Date()
+      // now = new Date(now.getTime())
+      // if (now >= expirationDate) {
+      //   return
+      // }
+      // commit('storeUser', { userId: userId, email: email, refreshToken: refreshToken })
+      dispatch('authStateObserver')
+      console.log('fetchUser tryAutoLogin')
+      dispatch('fetchUser', email)
+    },
+    logout ({commit}) {
+      auth.signOut()
+      .then(function() {
+        commit('clearUser')
+        localStorage.removeItem('userId')
+        localStorage.removeItem('email')
+        localStorage.removeItem('refreshToken')
+        console.log('successfully logged out')
+      })
+      .catch(function(error) {
+        console.log(error.message)
+      });
+    },
+    storeUserToDb ({commit, state}, userData) {
+      if (!userData) {
+        return
+      }
+      console.log('storeUserToDb 2')
+      var user = auth.currentUser
+      if (user){
+          user.getIdToken()
+          .then(res => {
+            globalAxios.post('/users.json?auth=' + res, userData)
+            .then(res => {
+                router.push('/?loggedin=true')
+            })
+            .catch(error => {
+              console.log(error.message)
+              commit('setErrorMessage', error.message)
+            })
+          })
+          .catch(error => console.log(error.message))
+      }
+    },
+    fetchUser ({commit, state}, userEmail) {
+      var user = auth.currentUser
+      if (user){
+        // TODO: REWORK TO NOT FETCH ALL USERS WITH EACH REQUEST AS IS INDICATED BY THE CONSOLE.LOG BELOW
+        // PERHAPS PERFORM THE LOOKIN IN THE LOGIN/SIGNUP PAGES AND ONLY POST THE MUTATION TO THE STORE
+        // const currentUserRef = db.ref('blog-posts').orderByChild('email').equalTo(userEmail)
+        user.getIdToken()
+          .then(res => {
+            // const users = []
+            globalAxios.get('/users.json?auth=' + res)
+            .then(res => {
+              const data = res.data
+              for (let key in data) {
+                const user = data[key]
+                if (user.email == userEmail) {
+                  user.uid = key
+                  user.refreshToken = user.refreshToken
+                  console.log('WE GOT ONE!!!', user)
+                  // users.push(user)
+                  commit('storeUser', assembleUserObject(user))
+                  if (user.type == 'admin') commit('setIsAdmin', true)
+                  return
+                }
+              }
+            })
+            .catch(error => console.log(error))
+        })
+        .catch(error => {
+          console.dir(error)
+          if (error.toString().includes('401')){
+            console.log('yep, it\'s a 401')
+            dispatch('logout')
+          }
+        })
+      }
+    },
+    isHomepage({commit}) {
+      const path = window.location.pathname
+      const Filename = path.split('/').pop()
+      if (Filename != '' && Filename != 'index.html') {
+          commit('setIsHomepage', false)
+      } else {
+          commit('setIsHomepage', true)
+      }
+    },
+    newsletterSignup({state}, data) {
+      let thisemail = data.user.email
+      console.log('newsl email', thisemail)
+      globalAxios.post('/newsletter.json', {email: thisemail})
+        .then(res => {
+            console.log(res)
+            this.newsletterSubscribed = true;
+        })
+      .catch(error => console.log(error))
+    },
+    setErrorMessage ({commit}, msg) {
+      commit('setErrorMessage', msg)
+    },
+    setSuccessMessage ({commit}, msg) {
+      commit('setSuccessMessage', msg)
     }
   },
   getters: {
@@ -164,13 +219,29 @@ export default new Vuex.Store({
       return state.user
     },
     isAuthenticated (state) {
-      return state.idToken !== null
+      return state.user !== null
     },
     onHomepage (state) {
         return state.isHomepage
     },
     loggedInAsAdmin (state) {
         return state.isAdmin
+    },
+    errorMsg (state) {
+        return state.errorMessage
+    },
+    successMsg (state) {
+        return state.successMessage
     }
   }
 })
+
+let assembleUserObject = (user) => {
+  return {
+    userId: user.uid,
+    email: user.email,
+    name: user.name,
+    isAdmin: user.admin,
+    refreshToken: user.refreshToken
+  }
+}

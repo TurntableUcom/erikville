@@ -38,30 +38,31 @@
 
           <!-- respond
                     ================================================== -->
-          <div class="respond" v-if="auth">
+          <div class="respond" v-if="authenticated">
+            <div v-if="!this.commentPosted">
+              <h3 class="h2">Add Comment</h3>
 
-            <h3 class="h2">Add Comment</h3>
+              <form @submit.prevent="submitComment">
+                <fieldset>
 
-            <form @submit.prevent="submitComment">
-              <fieldset>
+                  <div class="form-field">
+                    <input name="cName" type="text" id="cName" class="full-width" placeholder="Your Name" v-model="commentName" :disabled="disableFields" />
+                  </div>
 
-                <div class="form-field">
-                  <input name="cName" type="text" id="cName" class="full-width" placeholder="Your Name" v-model="commentName" :disabled="disableFields" />
-                </div>
+                  <div class="form-field">
+                    <input name="cEmail" type="text" id="cEmail" class="full-width" placeholder="Your Email" v-model="commentEmail" :disabled="disableFields" />
+                  </div>
 
-                <div class="form-field">
-                  <input name="cEmail" type="text" id="cEmail" class="full-width" placeholder="Your Email" v-model="commentEmail" :disabled="disableFields" />
-                </div>
+                  <div class="message form-field">
+                    <textarea name="cMessage" id="cMessage" class="full-width" placeholder="Your Message" v-model="commentMessage"></textarea>
+                  </div>
 
-                <div class="message form-field">
-                  <textarea name="cMessage" id="cMessage" class="full-width" placeholder="Your Message" v-model="commentMessage"></textarea>
-                </div>
+                  <button type="submit" class="submit btn--primary btn--large full-width">Submit</button>
 
-                <button type="submit" class="submit btn--primary btn--large full-width">Submit</button>
-
-              </fieldset>
-            </form>
-            <!-- end form -->
+                </fieldset>
+              </form>
+              <!-- end form -->
+            </div>
           </div>
 
           <div class="respond" v-else>
@@ -82,6 +83,7 @@
   import Vuex from 'vuex'
   import globalAxios from 'axios'
   import comment from './comment.vue'
+  import { db, auth } from '../../firebase';
 
   export default {
     data () {
@@ -95,12 +97,16 @@
         commentName: '',
         commentEmail: '',
         commentMessage: '',
-        disableFields: false
+        disableFields: false,
+        commentPosted: false
       }
     },
     computed: {
-      auth () {
+      authenticated () {
         return this.$store.getters.isAuthenticated
+      },
+      loggedInUser(){
+        return this.$store.getters.user
       }
     },
     methods: {
@@ -129,32 +135,41 @@
       },
       submitComment() {
         var d = new Date();
-        let comment = {
-          author: this.commentName,
-          comment: this.commentMessage,
-          email: this.commentEmail,
-          date: (d.getMonth()+ 1) + '/' + d.getDate() + '/' + d.getFullYear()
-        }
-        globalAxios.post('blog-posts/' + this.postid + '/comments.json?auth=' + this.$store.state.idToken, comment)
+        var user = auth.currentUser
+        if (user){
+          user.getIdToken()
           .then(res => {
-            console.log(res)
-            this.articleComments.push(comment)
-            this.commentName = ''
-            this.commentMessage = ''
-            this.commentEmail = ''
-          })
+            let comment = {
+              author: this.commentName,
+              comment: this.commentMessage,
+              email: this.commentEmail,
+              date: (d.getMonth()+ 1) + '/' + d.getDate() + '/' + d.getFullYear()
+            }
+            globalAxios.post('blog-posts/' + this.postid + '/comments.json?auth=' + res, comment)
+              .then(res => {
+                console.log(res)
+                this.articleComments.push(comment)
+                this.commentName = ''
+                this.commentMessage = ''
+                this.commentEmail = ''
+                this.commentPosted = true
+              })
+              .catch(error => console.log(error))
+            })
           .catch(error => console.log(error))
+        } else {
+          // TODO handle this error, display something?
+        }
       }
     },
     created () {
         this.fetchBlogPost();
     },
-    mounted () {
-        if (this.auth){
-          if (this.$store.getters.user){
-            const me = this.$store.getters.user
-            this.commentName = me.name
-            this.commentEmail = me.email
+    updated () {
+        if (this.authenticated){
+          if (this.loggedInUser !== null){
+            this.commentName = this.loggedInUser.name
+            this.commentEmail = this.loggedInUser.email
             this.disableFields = true
           }
         }
@@ -168,5 +183,15 @@
 <style scoped>
   input[type="email"], input[type="number"], input[type="search"], input[type="text"], input[type="tel"], input[type="url"], input[type="password"], textarea, select {
     background-color: transparent!important
+  }
+
+  .respond #cName, .respond #cEmail { 
+    padding: .2rem 0
+  }
+  #comments .respond form {
+    padding-top:1rem;
+  }
+  #comments .respond form .form-field {
+    margin-bottom:1.8rem;
   }
 </style>

@@ -259,9 +259,15 @@ export default {
     featuredPosts: {
       source: db.ref('blog-posts').orderByChild('featured').equalTo('y'),
       readyCallback(snapshot) {
-          this.sortFeaturedPosts()
-          // console.log('featured snapshot')
-          // console.log(this.featuredPosts)
+        for (let idx in this.featuredPosts) { // add key id to each post
+          const post = this.featuredPosts[idx]
+          const dbkey = post['.key']
+          post.id = dbkey
+          this.featuredPosts[idx] = post
+        }
+        this.sortFeaturedPosts()
+        // console.log('featured snapshot')
+        // console.log(this.featuredPosts)
       },
       cancelCallback(err) {
         console.error(err);

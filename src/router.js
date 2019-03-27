@@ -14,6 +14,7 @@ import Categories from './components/categories/categories.vue';
 import Category from './components/categories/category.vue';
 import AdminDash from './components/admin/dashboard.vue';
 import AdminNewPost from './components/admin/new-post.vue';
+import AdminEditPost from './components/admin/edit-post.vue';
 
 Vue.use(VueRouter);
 
@@ -45,7 +46,22 @@ const routes = [
         next('/signin')
       }
     }
+  },
+  { path: '/admin/edit-post/:idofpost', component: AdminEditPost,
+    beforeEnter (to, from, next) {
+      if (store.state.isAdmin) {
+        next()
+      } else {
+        next('/signin')
+      }
+    }
   }
 ]
 
-export default new VueRouter({mode:'history', routes})
+export default new VueRouter({
+  mode:'history',
+  routes,
+  scrollBehavior (to, from, savedPosition) {
+    return { x: 0, y: 0 } // page scroll to top for all route navigations
+  }
+})
