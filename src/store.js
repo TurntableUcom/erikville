@@ -42,7 +42,7 @@ export default new Vuex.Store({
       auth.onAuthStateChanged(function(user) {
         if (user) {
           if (!isNewSignup) commit('storeUser', assembleUserObject(user))
-          console.log('fetchUser authStateObserver (just stored user)')
+          // console.log('fetchUser authStateObserver (just stored user)')
           dispatch('fetchUser', user.email)
         } else {
           commit('clearUser')
@@ -53,7 +53,7 @@ export default new Vuex.Store({
       auth.createUserWithEmailAndPassword(authData.email, authData.password)
       .then (res => {
         dispatch('authStateObserver', true);
-        console.log('call storeUserToDb', res)
+        // console.log('call storeUserToDb', res)
         dispatch('storeUserToDb', {
           name: authData.name,
           email: authData.email,
@@ -115,7 +115,7 @@ export default new Vuex.Store({
       // }
       // commit('storeUser', { userId: userId, email: email, refreshToken: refreshToken })
       dispatch('authStateObserver')
-      console.log('fetchUser tryAutoLogin')
+      // console.log('fetchUser tryAutoLogin')
       dispatch('fetchUser', email)
     },
     logout ({commit}) {
@@ -131,18 +131,18 @@ export default new Vuex.Store({
         console.log(error.message)
       });
     },
-    storeUserToDb ({commit, state}, userData) {
+    storeUserToDb ({commit}, userData) {
       if (!userData) {
         return
       }
-      console.log('storeUserToDb 2')
       var user = auth.currentUser
       if (user){
           user.getIdToken()
           .then(res => {
             globalAxios.post('/users.json?auth=' + res, userData)
             .then(res => {
-                router.push('/?loggedin=true')
+              debugger
+              router.push('/?loggedin=true')
             })
             .catch(error => {
               console.log(error.message)
@@ -154,13 +154,13 @@ export default new Vuex.Store({
     },
     fetchUser ({commit, state}, userEmail) {
       var user = auth.currentUser
+      // console.log('fetchUser', user)
       if (user){
         // TODO: REWORK TO NOT FETCH ALL USERS WITH EACH REQUEST AS IS INDICATED BY THE CONSOLE.LOG BELOW
         // PERHAPS PERFORM THE LOOKIN IN THE LOGIN/SIGNUP PAGES AND ONLY POST THE MUTATION TO THE STORE
         // const currentUserRef = db.ref('blog-posts').orderByChild('email').equalTo(userEmail)
         user.getIdToken()
           .then(res => {
-            // const users = []
             globalAxios.get('/users.json?auth=' + res)
             .then(res => {
               const data = res.data
@@ -169,8 +169,7 @@ export default new Vuex.Store({
                 if (user.email == userEmail) {
                   user.uid = key
                   user.refreshToken = user.refreshToken
-                  console.log('WE GOT ONE!!!', user)
-                  // users.push(user)
+                  // console.log('WE GOT ONE!!!', user)
                   commit('storeUser', assembleUserObject(user))
                   if (user.type == 'admin') commit('setIsAdmin', true)
                   return
@@ -191,21 +190,32 @@ export default new Vuex.Store({
     isHomepage({commit}) {
       const path = window.location.pathname
       const Filename = path.split('/').pop()
-      if (Filename != '' && Filename != 'index.html') {
-          commit('setIsHomepage', false)
+      if (path.split('/').length >= 3) {
+        commit('setIsHomepage', false)
       } else {
+        if (Filename != '' && Filename != 'index.html') {
+          commit('setIsHomepage', false)
+        } else {
           commit('setIsHomepage', true)
+        }
       }
     },
     newsletterSignup({state}, data) {
       let thisemail = data.user.email
-      console.log('newsl email', thisemail)
+      /*
       globalAxios.post('/newsletter.json', {email: thisemail})
         .then(res => {
             console.log(res)
             this.newsletterSubscribed = true;
         })
       .catch(error => console.log(error))
+      */
+      // console.log('newsl email', thisemail)
+      const addedAt = new Date()
+      // console.log(addedAt)
+      db.ref('newsletter').push({email: thisemail, added: addedAt}) /// WHY THE FUCK addedAd NOT BEING ADDED TO FIREBASE ??
+        .then(res => console.log('successful opt-in'))
+        .catch(error => console.log(error.message))
     },
     setErrorMessage ({commit}, msg) {
       commit('setErrorMessage', msg)

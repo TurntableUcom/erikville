@@ -80,8 +80,8 @@
       onSubmit () {
         var user = auth.currentUser
         if (user){
-          user.getIdToken()
-          .then(res => {
+         //  user.getIdToken()
+         // .then(res => {
             var d = new Date();
             let newPost = {
               title: this.title,
@@ -92,6 +92,7 @@
               image: this.image,
               date: (d.getMonth()+ 1) + '/' + d.getDate() + '/' + d.getFullYear()
             }
+            /*
             globalAxios.post('blog-posts.json?auth=' + res, newPost)
               .then(res => {
                 // console.log(res)
@@ -100,6 +101,10 @@
               .catch(error => console.log(error))
             })
           .catch(error => console.log(error))
+          */
+         db.ref('blog-posts').push(newPost)
+        .then(res => console.log('successful post editation'))
+        .catch(error => console.log(error.message))
         }
       },
       fileAdded(){

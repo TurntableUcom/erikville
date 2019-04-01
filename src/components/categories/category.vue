@@ -27,7 +27,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 // import globalAxios from 'axios'
 import posting from '../homepage/post.vue'
-import { db } from '../../firebase';
+import { db } from '../../firebase'
   
 export default {
   data () {

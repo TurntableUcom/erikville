@@ -119,7 +119,8 @@
 </template>
 
 <script>
-  import globalAxios from 'axios'
+  // import globalAxios from 'axios'
+  import { db } from '../../firebase'
 
   export default {
     data () {
@@ -130,13 +131,20 @@
     },
     methods: {
       newsletterSignup() {
-        console.log(this.newsletterEmail)
+        /*
         globalAxios.post('/newsletter.json', {email: this.newsletterEmail})
           .then(res => {
               console.log(res)
               this.newsletterSubscribed = true;
           })
         .catch(error => console.log(error))
+        */
+        const addedAt = new Date()
+        console.log(this.newsletterEmail)
+        console.log(addedAt)
+        db.ref('newsletter').push({email: this.newsletterEmail, added: addedAt}) /// WHY THE FUCK addedAd NOT BEING ADDED TO FIREBASE ??
+          .then(res => console.log('successful opt-in'))
+          .catch(error => console.log(error.message))
       }
     }
   }

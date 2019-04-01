@@ -29,9 +29,9 @@
           <label for="tags">Post Tag(s)</label>
           <button @click="addTag" type="button">Add Tag</button>
           <div class="tag-list">
-            <div class="input" v-for="(tag, index) in thisPostTags" :key="tag.key">
+            <div class="input" v-for="(tag, index) in tagz" :key="tag.key">
               <!--<label :for="tag.id">tag #{{ index + 1 }}</label>-->
-              <input type="text" :id="tag" v-model="tag.value">
+              <input type="text" :id="tag.key" v-model="tag.value">
               <button @click="deleteTag(tag)" type="button">X</button>
               <div style="clear:both"></div>
             </div>
@@ -56,6 +56,17 @@
           &nbsp;
           <button @click.prevent="deletePost">Delete This Post</button>
         </div>
+        <hr v-if="this.thisPost.comments"/>
+        <div class="input comments">
+          <template v-for="comment in thisPostComments">
+            <table :key="comment.key"><tr><td width="40" style="padding-right:6px">
+                <button @click="deleteComment(comment)" type="button">X</button>
+              </td><td style="padding-left:6px">
+                <strong :key="comment.key">{{ comment.value.author }}</strong> ({{ comment.value.email }}) on <em :key="comment.key">{{ comment.value.date }}</em><br :key="comment.key"/>
+                {{ comment.value.comment }}<br :key="comment.key"/><br :key="comment.key"/>
+            </td></tr></table>
+          </template>
+        </div>
       </form>
     </div>
   </div>
@@ -75,39 +86,53 @@
         title: '',
         body: '',
         postTags: [],
+        postComments: [],
         featured: 'n',
         featuredOrder: 0,
         image: '',
         postid: this.$route.params.idofpost,
-        // postsArr: [],
         postsObj: null,
         thisPost: null,
-        thisPostTags: []
+        thisPostTags: [],
+        thisPostComments: []
+      }
+    },
+    computed: {
+      tagz () {
+        return this.thisPostTags
       }
     },
     methods: {
       onSubmit () {
         var user = auth.currentUser
         if (user){
-          user.getIdToken()
-          .then(res => {
-            var d = new Date();
-            let newPost = {
-              title: this.title,
-              body: this.body,
-              tags: this.thisPostTags.map(tag => tag.value),
-              featured: this.featured,
-              featuredOrder: this.featuredOrder,
-              image: this.image,
-              date: (d.getMonth()+ 1) + '/' + d.getDate() + '/' + d.getFullYear()
-            }
-            globalAxios.put('blog-posts/' + this.postid + '.json?auth=' + res, newPost)
-              .then(res => {
-                router.push('/admin?post=updated')
-              })
-              .catch(error => console.log(error))
+          //   user.getIdToken()
+          //   .then(res => {
+          let d = new Date();
+          let newPost = {
+            title: this.title,
+            body: this.body,
+            tags: this.thisPostTags.map(tag => tag.value),
+            comments: this.thisPostComments.map(comment => comment.value),
+            featured: this.featured,
+            featuredOrder: this.featuredOrder,
+            image: this.image,
+            date: (d.getMonth()+ 1) + '/' + d.getDate() + '/' + d.getFullYear()
+          }
+          console.log('newPost', newPost)
+          /*
+          globalAxios.put('blog-posts/' + this.postid + '.json?auth=' + res, newPost)
+            .then(res => {
+              router.push('/admin?post=updated')
             })
+            .catch(error => console.log(error))
+          })
           .catch(error => console.log(error))
+          */
+
+          db.ref('blog-posts').child(this.postid).set(newPost)
+          .then(res => {console.log('successful post editation.');router.push('/admin?post=edited')})
+          .catch(error => console.log(error.message))
         }
       },
       cancelEdit () {
@@ -116,10 +141,10 @@
       deletePost () {
         try {
           db.ref('blog-posts').child(this.postid).remove()
+          router.push('/admin?post=deleted')
         } catch (ex){
-          console.log(ex)
+          console.log('ex.message', ex.message)
         }
-        // console.log('removed')
       },
       fileAdded(){
         console.log('this be file yo')
@@ -132,7 +157,27 @@
         this.thisPostTags.push(postTag)
       },
       deleteTag (id) {
-        this.thisPostTags = this.thisPostTags.filter(tag => tag.id !== id)
+        id = id.key
+        let buhbye = []
+        for (let tag of this.thisPostTags){
+          console.log('tagd', tag)
+          console.log('tagd.key', tag.key)
+          if (tag.key != (id + '')) buhbye.push(tag)
+        }
+        // const bybye = this.thisPostTags.filter(tag => tag !== (id + ''))
+        this.thisPostTags = buhbye
+        this.onSubmit()
+      },
+      deleteComment (id) {
+        id = id.key
+        let buhbye = []
+        for (let comm of this.thisPostComments){
+          console.log('tagdc', comm)
+          console.log('tagdc.key', comm.key)
+          if (comm.key != (id + '')) buhbye.push(comm)
+        }
+        this.thisPostComments = buhbye
+        this.onSubmit()
       }
     },
     validations: {
@@ -152,23 +197,38 @@
         source: db.ref('blog-posts'),
         asObject: true,
         readyCallback(snapshot) {
-          this.thisPost = this.postsObj[this.$route.params.idofpost]
+          this.thisPost = this.postsObj[this.postid]
           this.title = this.thisPost.title
           this.body = this.thisPost.body
           this.image = this.thisPost.image
           this.featured = this.thisPost.featured
           this.featuredOrder = this.thisPost.featuredOrder
           this.postTags = this.thisPost.tags
-          for (let ii = 0; ii < this.postTags.length; ii++){
-            let newTag = {
-              key: ii,
-              value: this.postTags[ii]
+          const thesetags = Object.entries(this.postTags)
+          for (let tag of thesetags){
+            let newKey = {
+              key: tag[0],
+              value: tag[1]
             }
-            this.thisPostTags.push(newTag)
+            this.thisPostTags.push(newKey)
+          }
+          this.postTags = this.thisPostTags
+          if (this.thisPost.comments){
+            this.postComments = this.thisPost.comments
+            const thesecomments = Object.entries(this.postComments)
+            for (let comm of thesecomments){
+              console.log('comm', comm)
+              let newComm = {
+                key: comm[0],
+                value: comm[1]
+              }
+              this.thisPostComments.push(newComm)
+            }
+            this.postComments = this.thisPostComments
           }
         },
         cancelCallback(err) {
-          console.error(err);
+          console.error(err.message);
         }
       }
     }
@@ -180,11 +240,11 @@
     width: calc(100% - 67px);
     float:left;
   }
-  .tags .tag-list button {
+  .tags .tag-list button, .comments button {
     height: 4rem;
     line-height:3.6rem;
     padding: 0 2rem;
-    margin-top:2px;
+    margin-top:-1px;
     float:right;
     color: white;
     font: inherit;
@@ -199,6 +259,10 @@
 
   .tags .tags-list label {
     clear:left;
+  }
+
+  .tags .tags-list input {
+    margin-bottom:1px !important 
   }
 
   .tags button {

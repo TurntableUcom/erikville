@@ -2466,7 +2466,7 @@ body.search-is-visible {
    margin-bottom: 2.4rem;
 }
 
-.featured .entry__category a {
+.featured .entry__category a, .featured .entry__category span {
    display: inline-block;
    color: #FFFFFF;
    padding: 0 1.5rem;
@@ -2528,7 +2528,7 @@ body.search-is-visible {
    height: 564px;
 }
 
-.featured__column--big .entry__category a {
+.featured__column--big .entry__category a, .featured__column--big .entry__category span {
    background-color: #01aef0;
 }
 
@@ -2557,7 +2557,7 @@ body.search-is-visible {
    margin-bottom: 1.5rem;
 }
 
-.featured__column--small .entry__category a {
+.featured__column--small .entry__category a, .featured__column--small .entry__category span {
    background-color: #679a23;
 }
 

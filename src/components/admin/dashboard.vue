@@ -4,6 +4,9 @@
     <div class="success" id="newPostSuccess" v-if="newPostSuccess">New Post Posted, Poster!!</div>
 
     <button @click="addPost" id="addNew">Add New Post</button>
+    
+    <button @click="editCategories" id="editCategories">Edit Categories</button>
+
     <div v-for="post in blogPosts" :key="post.id">
       <button @click="editPost($event, post.id)" class="editPost">Edit</button>
       &nbsp;
@@ -33,6 +36,9 @@
       },
       editPost(event, postid) {
         router.push('/admin/edit-post/' + postid)
+      },
+      editCategories(event) {
+        router.push('/admin/categories/')
       }
     },
     created() {
@@ -74,8 +80,12 @@
       width:100%;
     }
 
-    button#addNew {
+    button#addNew, button#editCategories {
       position:absolute;right:20px;top:38px
+    }
+
+    button#editCategories {
+      top:110px
     }
 
     .editPost {

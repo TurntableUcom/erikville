@@ -8,14 +8,6 @@
             <img src="/assets/images/logo.svg" alt="Homepage" />
           </router-link>
         </div>
-
-        <!--
-        <ul class="header__social" style="top:0">
-          <li>
-            hp: {{ isOnHomepage }}
-          </li>
-        </ul>
-        -->
         
         <ul class="header__social">
           <li v-if="!auth">
@@ -99,7 +91,7 @@
                 </span>
 
                 <h1>
-                  <router-link :to="'/post/' + this.sortedFeaturedPosts[0].id + '/' + this.sortedFeaturedPosts[0].title.replace(/ /g,'-').toLowerCase()">{{ this.sortedFeaturedPosts && this.sortedFeaturedPosts[0].title }}</router-link>
+                  <router-link :to="'/post/' + this.sortedFeaturedPosts[0]['.key'] + '/' + this.sortedFeaturedPosts[0].title.replace(/ /g,'-').toLowerCase()">{{ this.sortedFeaturedPosts && this.sortedFeaturedPosts[0].title }}</router-link>
                 </h1>
 
                 <div class="entry__info">
@@ -121,11 +113,11 @@
 
               <div class="entry__content">
                 <span class="entry__category">
-                  <a href="#0" style="cursort:arrow">{{ this.sortedFeaturedPosts && this.sortedFeaturedPosts[1].tags[0] }}</a>
+                  <span>{{ this.sortedFeaturedPosts && this.sortedFeaturedPosts[1].tags[0] }}</span>
                 </span>
 
                 <h1>
-                  <router-link :to="'/post/' + this.sortedFeaturedPosts[1].id + '/' + this.sortedFeaturedPosts[1].title.replace(/ /g,'-').toLowerCase()">{{ this.sortedFeaturedPosts[1].title }}</router-link>
+                  <router-link :to="'/post/' + this.sortedFeaturedPosts[1]['.key'] + '/' + this.sortedFeaturedPosts[1].title.replace(/ /g,'-').toLowerCase()">{{ this.sortedFeaturedPosts[1].title }}</router-link>
                 </h1>
 
                 <div class="entry__info">
@@ -143,11 +135,11 @@
 
               <div class="entry__content">
                 <span class="entry__category">
-                  <a href="#0" style="cursort:arrow">{{ this.sortedFeaturedPosts && sortedFeaturedPosts[2].tags[0] }}</a>
+                  <span>{{ this.sortedFeaturedPosts && sortedFeaturedPosts[2].tags[0] }}</span>
                 </span>
 
                 <h1>
-                  <router-link :to="'/post/' + this.sortedFeaturedPosts[2].id + '/' + this.sortedFeaturedPosts[2].title.replace(/ /g,'-').toLowerCase()">{{ this.sortedFeaturedPosts && this.sortedFeaturedPosts[2].title }}</router-link>
+                  <router-link :to="'/post/' + this.sortedFeaturedPosts[2]['.key'] + '/' + this.sortedFeaturedPosts[2].title.replace(/ /g,'-').toLowerCase()">{{ this.sortedFeaturedPosts && this.sortedFeaturedPosts[2].title }}</router-link>
                 </h1>
 
                 <div class="entry__info">
@@ -171,14 +163,14 @@
     </div>
     <!-- end pageheader-content row -->
 
-    <!-- header -->
+    <!-- end header -->
   </section>
 </template>
 
 <script>
 import Vue from 'vue'
 import Vuex from 'vuex'
-import globalAxios from 'axios'
+// import globalAxios from 'axios'
 import { db } from '../../firebase';
   
 export default {
@@ -207,6 +199,7 @@ export default {
       // vm.$bindAsArray('featuredPosts', db.ref('blog-posts').orderByChild('featured').equalTo('y'), null, () => this.sortFeaturedPosts())
 
       // AFTER LOGGIN IN OR REGISETRING AND BEING REDIRECTED, SORTED WAS EMPTY BUT POSTS EXISTED, DUNNO WHY
+      // console.log('created')
       if (this.sortedFeaturedPosts.length < 1) this.sortedFeaturedPosts = this.featuredPosts
   },
   methods: {
@@ -252,6 +245,7 @@ export default {
     },
     */
     sortFeaturedPosts() {
+      // console.log('sorting')
       if (this.isOnHomepage) this.sortedFeaturedPosts = this.featuredPosts.sort(compare)
     }
   },
@@ -276,11 +270,11 @@ export default {
     blogCategories: {
       source: db.ref('blog-categories').orderByChild('order'),
       readyCallback(snapshot) {
-          // console.log('categories snapshot')
-          // console.log(this.blogCategories)
+        // console.log('categories snapshot')
+        // console.log(this.blogCategories)
       },
       cancelCallback(err) {
-        console.error(err);
+        console.error(err.message);
       }
     }
   }

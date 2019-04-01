@@ -25,20 +25,6 @@ axios.defaults.baseURL = 'https://eric-blog-957a0.firebaseio.com/';
 // axios.defaults.headers.common['aut'] = 'AIzaSyCIz92jHPqVwASkepiB66Gn2q0_b89rd6Y';
 axios.defaults.headers.get['Accepts'] = 'application/json';
 
-/*
-const reqInterceptor = axios.interceptors.request.use(config => {
-  console.log('Request Interceptor', config)
-  return config
-})
-const resInterceptor = axios.interceptors.response.use(res => {
-  console.log('Response Interceptor', res)
-  return res
-})
-
-axios.interceptors.request.eject(reqInterceptor)
-axios.interceptors.response.eject(resInterceptor)
-*/
-
 let vm = new Vue({
   el: '#app',
   router,

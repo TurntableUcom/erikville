@@ -4,6 +4,10 @@
   background-color:#eee;position:relative;
 }
 
+#admin {
+  min-height:220px
+}
+
 .success, .error {
     color:green;border:solid 1px green;padding: 10px 15px;background-color:#bce7ba;margin:25px auto;
 }

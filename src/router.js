@@ -15,6 +15,7 @@ import Category from './components/categories/category.vue';
 import AdminDash from './components/admin/dashboard.vue';
 import AdminNewPost from './components/admin/new-post.vue';
 import AdminEditPost from './components/admin/edit-post.vue';
+import AdminCategories from './components/admin/categories.vue';
 
 Vue.use(VueRouter);
 
@@ -30,31 +31,19 @@ const routes = [
   { path: '/post/:postid', component: BlogPost },
   { path: '/post/:postid/:posttitle', component: BlogPost },
   { path: '/admin', component: AdminDash,
-    beforeEnter (to, from, next) {
-      if (store.state.isAdmin) {
-        next()
-      } else {
-        next('/signin')
-      }
-    }
+    beforeEnter (to, from, next) { store.state.isAdmin ? next() : next('/signin') }
   },
   { path: '/admin/add-post', component: AdminNewPost,
-    beforeEnter (to, from, next) {
-      if (store.state.isAdmin) {
-        next()
-      } else {
-        next('/signin')
-      }
-    }
+    beforeEnter (to, from, next) { store.state.isAdmin ? next() : next('/signin') }
   },
   { path: '/admin/edit-post/:idofpost', component: AdminEditPost,
-    beforeEnter (to, from, next) {
-      if (store.state.isAdmin) {
-        next()
-      } else {
-        next('/signin')
-      }
-    }
+    beforeEnter (to, from, next) { store.state.isAdmin ? next() : next('/signin') }
+  },
+  { path: '/admin/categories', component: AdminCategories,
+    beforeEnter (to, from, next) { store.state.isAdmin ? next() : next('/signin') }
+  },
+  { path: '/admin/add-category', component: AdminCategories,
+    beforeEnter (to, from, next) { store.state.isAdmin ? next() : next('/signin') }
   }
 ]
 
