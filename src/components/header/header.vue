@@ -170,6 +170,7 @@
 <script>
 import Vue from 'vue'
 import Vuex from 'vuex'
+import router from '../../router'
 // import globalAxios from 'axios'
 import { db } from '../../firebase';
   
@@ -179,7 +180,8 @@ export default {
         blogCategories: [],
         // blogPosts: [],
         featuredPosts: [],
-        sortedFeaturedPosts: []
+        sortedFeaturedPosts: [],
+        searchTerm: this.$route.query.s
       }
   },
   computed: {
@@ -200,7 +202,16 @@ export default {
 
       // AFTER LOGGIN IN OR REGISETRING AND BEING REDIRECTED, SORTED WAS EMPTY BUT POSTS EXISTED, DUNNO WHY
       // console.log('created')
-      if (this.sortedFeaturedPosts.length < 1) this.sortedFeaturedPosts = this.featuredPosts
+      if (this.isOnHomepage) {
+        if (this.sortedFeaturedPosts.length < 1) this.sortedFeaturedPosts = this.featuredPosts.sort(compare)
+        console.log(this.sortedFeaturedPosts)
+      }
+
+      // should never fire, but just in case search form onsubmit preventDefault doesn't work and the search is submitted via ?s=term
+      if (typeof this.searchTerm === 'string' && this.searchTerm != ''){
+        console.log('search form preventDefault() didnt work again')
+        router.push('/search/' + this.searchTerm)
+      }
   },
   methods: {
     onLogout() {
@@ -244,22 +255,21 @@ export default {
         .catch(error => console.log(error))
     },
     */
-    sortFeaturedPosts() {
-      // console.log('sorting')
-      if (this.isOnHomepage) this.sortedFeaturedPosts = this.featuredPosts.sort(compare)
-    }
   },
+  //TODO: REWORK to ONLY BIND FEATURED POSTS IF ON HOMEPAGE
   firebase: {
     featuredPosts: {
       source: db.ref('blog-posts').orderByChild('featured').equalTo('y'),
       readyCallback(snapshot) {
+        /*
         for (let idx in this.featuredPosts) { // add key id to each post
           const post = this.featuredPosts[idx]
           const dbkey = post['.key']
           post.id = dbkey
           this.featuredPosts[idx] = post
         }
-        this.sortFeaturedPosts()
+        */
+        if (this.isOnHomepage) this.sortedFeaturedPosts = this.featuredPosts.sort(compare)
         // console.log('featured snapshot')
         // console.log(this.featuredPosts)
       },

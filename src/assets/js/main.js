@@ -86,28 +86,25 @@
             searchField = searchWrap.find('.search-field'),
             closeSearch = searchWrap.find('.header__overlay-close'),
             searchTrigger = $('.header__search-trigger'),
+            searchForm = $('.header__search-form'),
             siteBody = $('body');
 
         searchTrigger.on('click', function (e) {
-
-            console.log('wtf mate')
+            // console.log('wtf mate')
 
             e.preventDefault();
             e.stopPropagation();
-
             var $this = $(this);
 
             siteBody.addClass('search-is-visible');
             setTimeout(function () {
                 searchWrap.find('.search-field').focus();
-            }, 100);
+            }, 101);
 
         });
 
         closeSearch.on('click', function (e) {
-
             var $this = $(this);
-
             e.stopPropagation();
 
             if (siteBody.hasClass('search-is-visible')) {
@@ -128,8 +125,15 @@
             e.stopPropagation();
         });
 
-        searchField.attr({ placeholder: 'Type Keywords', autocomplete: 'off' });
+        searchField.on('keydown', function (e) {
+            e.stopPropagation();
+            var keycode = (e.keyCode ? e.keyCode : e.which)
+            if (keycode == '13') document.location = '/search/' + searchField[0].value
+        });
 
+        searchField.attr({ placeholder: 'Type Search Terms Here', autocomplete: 'off' });
+
+        searchForm.on('submit', function(e){e.preventDefault()})
     };
 
 

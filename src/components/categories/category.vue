@@ -70,10 +70,10 @@ export default {
         })
         .catch(error => console.log(error))
     },
-    */
     sortPosts() {
       this.sortedPosts = this.blogPosts.sort(compare)
     }
+    */
   },
   components: {
     'appPost': posting
@@ -95,14 +95,15 @@ export default {
           }
         }
         this.blogPosts = matchingPostsArray
-
+        /*
         for (let idx in this.blogPosts) { // add key id to each post
           const post = this.blogPosts[idx]
           const dbkey = post['.key']
           post.id = dbkey
           this.blogPosts[idx] = post
         }
-        this.sortPosts()
+        */
+        this.sortedPosts = this.blogPosts.sort(compare)
       },
       cancelCallback(err) {
         console.error(err.message);

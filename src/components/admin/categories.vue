@@ -29,6 +29,7 @@
 <script>
   import router from '../../router'
   import { db } from '../../firebase'
+  // import { addKeysToArray } from '../../mixins/postHelpers'
 
   export default {
     data () {
@@ -75,11 +76,14 @@
       blogCategories: {
         source: db.ref('blog-categories').orderByChild('order'), 
         readyCallback(snapshot) {
-          for (let idx in this.blogCategories) { // add key id to each post
+          /*
+          for (let idx in this.blogCategories) { // add key id to each category
             const cat = this.blogCategories[idx]
             const dbkey = cat['.key']
             this.blogCategories[idx] = cat
           }
+          */
+          // this.blogCategories = addKeysToArray(this.blogCategories)
           // console.log('bloogCategories', this.blogCategories)
         },
         cancelCallback(err) {

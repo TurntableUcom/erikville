@@ -69,7 +69,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 // import globalAxios from 'axios'
 import posting from './post.vue'
-// import { helpers } from '../../mixins/postHelpers.js'
+import { addKeysToArray, sortDesc } from '../../mixins/postHelpers'
 import { db } from '../../firebase'
   
 export default {
@@ -79,12 +79,6 @@ export default {
         sortedPosts: []
       }
   },
-  computed: {
-    auth () {
-      return this.$store.getters.isAuthenticated
-    }
-  },
-  mixins: [sortDesc],
   created () {
     // this.fetchBlogPosts(); // USING VUEFIRE NOW INSTEAD OF AXIOS FOR FETCHING
     // this.sortPosts()
@@ -93,15 +87,15 @@ export default {
     blogPosts: {
       source: db.ref('blog-posts').orderByChild('featured').equalTo('n'),
       readyCallback(snapshot) {
-        // console.log('snapshot', snapshot)
+        /*
         for (let idx in this.blogPosts) { // add key id to each post
           const post = this.blogPosts[idx]
           const dbkey = post['.key']
           post.id = dbkey
           this.blogPosts[idx] = post
-        }
-        // this.blogPosts = this.addKeyToPosts(this.blogPosts)
-        this.sortPosts()
+        }*/
+        // let posts = addKeysToArray(this.blogPosts)
+        this.sortedPosts = this.blogPosts.sort(sortDesc)
       },
       cancelCallback(err) {
         console.error(err);
@@ -130,16 +124,13 @@ export default {
         .catch(error => console.log(error))
     },
     */
-    sortPosts() {
-      this.sortedPosts = this.blogPosts.sort(sortDesc)
-      // console.dir(this.sortedPosts)
-    }
   },
   components: {
     'appPost': posting
   }
 }
 
+/*
 function sortDesc(a, b) {
   if (a.date > b.date)
       return -1;
@@ -147,4 +138,5 @@ function sortDesc(a, b) {
       return 1;
   return 0;
 }
+*/
 </script>

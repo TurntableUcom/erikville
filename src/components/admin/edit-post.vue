@@ -119,7 +119,8 @@
             image: this.image,
             date: (d.getMonth()+ 1) + '/' + d.getDate() + '/' + d.getFullYear()
           }
-          console.log('newPost', newPost)
+          // console.log('newPost', newPost)
+          
           /*
           globalAxios.put('blog-posts/' + this.postid + '.json?auth=' + res, newPost)
             .then(res => {
@@ -172,8 +173,8 @@
         id = id.key
         let buhbye = []
         for (let comm of this.thisPostComments){
-          console.log('tagdc', comm)
-          console.log('tagdc.key', comm.key)
+          // console.log('tagdc', comm)
+          // console.log('tagdc.key', comm.key)
           if (comm.key != (id + '')) buhbye.push(comm)
         }
         this.thisPostComments = buhbye
@@ -217,7 +218,7 @@
             this.postComments = this.thisPost.comments
             const thesecomments = Object.entries(this.postComments)
             for (let comm of thesecomments){
-              console.log('comm', comm)
+              // console.log('comm', comm)
               let newComm = {
                 key: comm[0],
                 value: comm[1]

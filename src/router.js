@@ -1,8 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
-import store from './store';
-
 import HomepagePosts from './components/homepage/posts.vue';
 import SignupPage from './components/auth/signup.vue';
 import SigninPage from './components/auth/signin.vue';
@@ -12,6 +10,7 @@ import PostVideo from './components/posts/video.vue';
 import BlogPost from './components/posts/post.vue';
 import Categories from './components/categories/categories.vue';
 import Category from './components/categories/category.vue';
+import Search from './components/search/search.vue';
 import AdminDash from './components/admin/dashboard.vue';
 import AdminNewPost from './components/admin/new-post.vue';
 import AdminEditPost from './components/admin/edit-post.vue';
@@ -30,26 +29,17 @@ const routes = [
   { path: '/post', component: PostVideo },
   { path: '/post/:postid', component: BlogPost },
   { path: '/post/:postid/:posttitle', component: BlogPost },
-  { path: '/admin', component: AdminDash,
-    beforeEnter (to, from, next) { store.state.isAdmin ? next() : next('/signin') }
-  },
-  { path: '/admin/add-post', component: AdminNewPost,
-    beforeEnter (to, from, next) { store.state.isAdmin ? next() : next('/signin') }
-  },
-  { path: '/admin/edit-post/:idofpost', component: AdminEditPost,
-    beforeEnter (to, from, next) { store.state.isAdmin ? next() : next('/signin') }
-  },
-  { path: '/admin/categories', component: AdminCategories,
-    beforeEnter (to, from, next) { store.state.isAdmin ? next() : next('/signin') }
-  },
-  { path: '/admin/add-category', component: AdminCategories,
-    beforeEnter (to, from, next) { store.state.isAdmin ? next() : next('/signin') }
-  }
+  { path: '/search/:searchTerm', component: Search },
+  { path: '/admin', component: AdminDash },
+  { path: '/admin/add-post', component: AdminNewPost },
+  { path: '/admin/edit-post/:idofpost', component: AdminEditPost },
+  { path: '/admin/categories', component: AdminCategories },
+  { path: '/admin/add-category', component: AdminCategories }
 ]
 
 export default new VueRouter({
   mode:'history',
-  routes,
+  routes: routes,
   scrollBehavior (to, from, savedPosition) {
     return { x: 0, y: 0 } // page scroll to top for all route navigations
   }
