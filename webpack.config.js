@@ -8,7 +8,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 module.exports = {
   entry: './src/main.js',
   output: {
-    path: path.resolve(__dirname, './disterectomy'),
+    path: path.resolve(__dirname, './dist'),
     publicPath: '',
     filename: 'build.js'
   },
