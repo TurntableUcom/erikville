@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import axios from './axios-auth'  // FOR NEWSLETTER SIGNUP UPON REGISTRATION
+// import axios from './axios-auth'  // WAS FOR NEWSLETTER SIGNUP UPON REGISTRATION, NOW USING VUEFIRE
 import globalAxios from 'axios'
-import { fireb, db, auth } from './firebase';
+import { db, auth } from './firebase';
 import router from './router'
 
 Vue.use(Vuex)
@@ -37,7 +37,7 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    authStateObserver({commit, dispatch, state}, isNewSignup) {
+    authStateObserver({commit, dispatch}, isNewSignup) {
       auth.onAuthStateChanged(function(user) {
         if (user) {
           if (!isNewSignup) commit('storeUser', assembleUserObject(user))
