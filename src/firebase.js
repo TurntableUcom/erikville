@@ -4,7 +4,7 @@ import 'firebase/database'
 import 'firebase/auth'
 
 const firebaseConfig = {
-    apiKey: " AIzaSyCIz92jHPqVwASkepiB66Gn2q0_b89rd6Y",
+    apiKey: "AIzaSyCIz92jHPqVwASkepiB66Gn2q0_b89rd6Y",
     authDomain: "eric-blog-957a0.firebaseapp.com",
     databaseURL: "https://eric-blog-957a0.firebaseio.com/",
     projectId: "eric-blog-957a0",

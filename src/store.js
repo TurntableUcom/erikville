@@ -3,7 +3,6 @@ import Vuex from 'vuex'
 import axios from './axios-auth'  // FOR NEWSLETTER SIGNUP UPON REGISTRATION
 import globalAxios from 'axios'
 import { fireb, db, auth } from './firebase';
-
 import router from './router'
 
 Vue.use(Vuex)
@@ -213,7 +212,7 @@ export default new Vuex.Store({
       // console.log('newsl email', thisemail)
       const addedAt = new Date()
       // console.log(addedAt)
-      db.ref('newsletter').push({email: thisemail, added: addedAt}) /// WHY THE FUCK addedAd NOT BEING ADDED TO FIREBASE ??
+      db.ref('newsletter').push({email: thisemail, added: addedAt}) /// WHY TF addedAt NOT BEING ADDED TO FIREBASE ??
         .then(res => console.log('successful opt-in'))
         .catch(error => console.log(error.message))
     },

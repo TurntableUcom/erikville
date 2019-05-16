@@ -1,19 +1,12 @@
 {
   "ExpandedNodes": [
     "",
-    "\\disterectomy",
-    "\\disterectomy\\assets",
-    "\\disterectomy\\assets\\js",
     "\\src",
-    "\\src\\assets",
-    "\\src\\assets\\css",
-    "\\src\\assets\\js",
     "\\src\\components",
+    "\\src\\components\\admin",
     "\\src\\components\\auth",
-    "\\src\\components\\categories",
-    "\\src\\components\\header",
-    "\\src\\components\\homepage"
+    "\\src\\components\\header"
   ],
-  "SelectedNode": "\\src\\components\\auth\\signup.vue",
+  "SelectedNode": "\\src\\components\\header\\header.vue",
   "PreviewInSolutionExplorer": false
 }

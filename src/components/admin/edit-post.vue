@@ -198,6 +198,7 @@
         source: db.ref('blog-posts'),
         asObject: true,
         readyCallback(snapshot) {
+          console.log('snapshot', snapshot)
           this.thisPost = this.postsObj[this.postid]
           this.title = this.thisPost.title
           this.body = this.thisPost.body

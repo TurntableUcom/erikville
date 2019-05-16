@@ -204,7 +204,7 @@ export default {
       // console.log('created')
       if (this.isOnHomepage) {
         if (this.sortedFeaturedPosts.length < 1) this.sortedFeaturedPosts = this.featuredPosts.sort(compare)
-        console.log(this.sortedFeaturedPosts)
+        // console.log(this.sortedFeaturedPosts)
       }
 
       // should never fire, but just in case search form onsubmit preventDefault doesn't work and the search is submitted via ?s=term

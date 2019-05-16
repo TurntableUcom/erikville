@@ -29,7 +29,7 @@
 
           <!-- commentlist -->
           <ol class="commentlist">
-            <app-comment v-if="cmnt!=null" v-for="cmnt in articleComments"  :key="cmnt.id"
+            <app-comment v-if="cmnt!=null" v-for="cmnt in articleComments" :key="cmnt.id"
               :commentAuthor="cmnt.author"
               :commentDate="cmnt.date"
               :commentBody="cmnt.comment"></app-comment>
