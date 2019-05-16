@@ -94,8 +94,11 @@ export default {
           post.id = dbkey
           this.blogPosts[idx] = post
         }*/
-        // let posts = addKeysToArray(this.blogPosts)
-        this.sortedPosts = this.blogPosts.sort(sortDesc)
+        let posts = addKeysToArray(this.blogPosts)
+        this.sortedPosts = posts.sort(sortDesc)
+        console.log('not featureds snapshot')
+        console.log(this.sortedPosts)
+        console.log(this.sortedPosts[0]['.key'])
       },
       cancelCallback(err) {
         console.error(err);
@@ -129,14 +132,4 @@ export default {
     'appPost': posting
   }
 }
-
-/*
-function sortDesc(a, b) {
-  if (a.date > b.date)
-      return -1;
-  if (a.date < b.date)
-      return 1;
-  return 0;
-}
-*/
 </script>

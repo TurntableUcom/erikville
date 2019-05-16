@@ -1,16 +1,16 @@
 
-function addKeysToArray(array){
+function addKeysToArray(array){ // add key id to each post
   let updatedArray = []
-  for (let idx in array) { // add key id to each post
+  for (let idx in array) {
     const item = array[idx]
-    const dbkey = array['.key']
-    // post.id = dbkey
+    const dbkey = item['.key']
+    item.id = dbkey
     updatedArray[idx] = item
   }
   return updatedArray
 }
 
-function sortDesc(a, b){
+function sortDesc(a, b){ // by date published
   if (a.date > b.date)
       return -1
   if (a.date < b.date)

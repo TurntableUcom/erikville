@@ -271,7 +271,8 @@ export default {
         */
         if (this.isOnHomepage) this.sortedFeaturedPosts = this.featuredPosts.sort(compare)
         // console.log('featured snapshot')
-        // console.log(this.featuredPosts)
+        // console.log(this.sortedFeaturedPosts)
+        // console.log(this.sortedFeaturedPosts[1]['.key'])
       },
       cancelCallback(err) {
         console.error(err);
